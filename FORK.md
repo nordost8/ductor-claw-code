@@ -1,6 +1,10 @@
 # Ductor Claw Code (fork)
 
+**Setup guide (step by step, cheap DeepSeek): [SETUP.md](SETUP.md)**
+
 This repository is **[Ductor](https://github.com/PleasePrompto/ductor)** extended with a **`claw` provider** so the bot can drive **[Claw Code](https://github.com/instructkr/claw-code)** — an open-source coding agent CLI — instead of relying only on Anthropic’s proprietary `claude` CLI.
+
+**Companion repo (build `claw` for cheap DeepSeek):** publish it as **`claw-code-cheap-deepseek`** — its root **`SETUP.md`** has build + `DEEPSEEK_API_KEY` instructions.
 
 Upstream Ductor is tracked as remote **`upstream`**. This fork adds:
 
@@ -11,7 +15,7 @@ Upstream Ductor is tracked as remote **`upstream`**. This fork adds:
 
 ## Requirements
 
-1. **Claw Code CLI** — build/install from your Claw fork (see companion repo). The `claw` binary must be on `PATH`.
+1. **Claw Code CLI** — build/install from your fork (**suggested name: `claw-code-cheap-deepseek`**). The `claw` binary must be on `PATH`. See that repo’s root **`SETUP.md`** after you publish.
 2. **Python 3.11+**, same as upstream Ductor.
 
 ## Quick start (Claw + DeepSeek)
@@ -54,4 +58,4 @@ git merge upstream/main
 
 Це **форк Ductor** із підтримкою **Claw Code**. Окремо потрібен репозиторій/збірка **Claw** (другий репо). Підключення дешевих моделей (наприклад **DeepSeek**) — через змінні в `~/.ductor/.env` і модель у `config.json`, згідно з можливостями твого бінарника `claw`.
 
-Див. також **`GITHUB_SETUP.md`** — як прив’язати `origin` до твого GitHub.
+Повна інструкція: **`SETUP.md`**. GitHub: **`GITHUB_SETUP.md`**. Другий репо назви **`claw-code-cheap-deepseek`** (англійською на GitHub).

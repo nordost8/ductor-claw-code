@@ -2,7 +2,7 @@
   <img src="https://raw.githubusercontent.com/PleasePrompto/ductor/main/ductor_bot/messenger/telegram/ductor_images/logo_text.png" alt="ductor" width="100%" />
 </p>
 
-<p align="center"><strong>Ductor Claw Code fork</strong> — adds <code>claw</code> provider (open-source Claw Code CLI, e.g. DeepSeek). See <a href="FORK.md">FORK.md</a> · <a href="GITHUB_SETUP.md">GITHUB_SETUP.md</a></p>
+<p align="center"><strong>Ductor Claw Code fork</strong> — adds <code>claw</code> provider (open-source Claw Code CLI, <strong>cheap DeepSeek</strong>). <a href="SETUP.md"><strong>SETUP.md</strong></a> · <a href="FORK.md">FORK.md</a> · <a href="GITHUB_SETUP.md">GITHUB_SETUP.md</a></p>
 
 <p align="center">
   <strong>Claude Code, Codex CLI, and Gemini CLI as your coding assistant — on Telegram.</strong><br>

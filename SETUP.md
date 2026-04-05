@@ -1,0 +1,88 @@
+# Ductor Claw Code — setup (Telegram bot + cheap DeepSeek)
+
+This repo is **Ductor with a `claw` provider**. It talks to the **Claw Code** CLI (open source), not to Anthropic’s proprietary `claude` CLI, so you can use **cheap DeepSeek** and other OpenAI-compatible backends your Claw build supports.
+
+## Suggested GitHub repository name
+
+Use something like **`ductor-claw-code`** (clear: Ductor + Claw).
+
+## Prerequisites
+
+1. **Claw CLI on `PATH`** — build from the companion fork (recommended name: **`claw-code-cheap-deepseek`**). See that repo’s **`SETUP.md`**.
+2. **Python 3.11+**
+3. A **Telegram bot token** and your numeric **user id** (for `allowed_user_ids`).
+
+## Install
+
+```bash
+git clone https://github.com/YOUR_USER/ductor-claw-code.git
+cd ductor-claw-code
+python3 -m venv .venv
+source .venv/bin/activate   # Windows: .venv\Scripts\activate
+pip install -e .
+```
+
+Confirm Claw is visible:
+
+```bash
+which claw
+claw --version
+```
+
+## Configuration
+
+Create `~/.ductor/config/config.json` (or set `DUCTOR_HOME` and put `config/config.json` there). Minimal example for **cheap DeepSeek**:
+
+```json
+{
+  "provider": "claw",
+  "model": "deepseek-chat",
+  "telegram_token": "PASTE_BOT_TOKEN",
+  "allowed_user_ids": [YOUR_TELEGRAM_USER_ID],
+  "interagent_port": 8799
+}
+```
+
+For the heavier reasoning model use `"model": "deepseek-reasoner"`.
+
+Secrets go in **`$DUCTOR_HOME/.env`** (default `~/.ductor/.env`). At minimum for DeepSeek:
+
+```bash
+DEEPSEEK_API_KEY=sk-your-key-here
+```
+
+Do not commit `.env`.
+
+## Run
+
+```bash
+source .venv/bin/activate
+python -m ductor_bot
+```
+
+Or use your own systemd service / `pipx` layout; the important part is **`claw` on `PATH`** and **`.env` + `config.json`** as above.
+
+## Companion repository
+
+- **Claw (cheap DeepSeek)** — publish as **`claw-code-cheap-deepseek`** (see its `SETUP.md`).
+
+## Syncing from upstream Ductor
+
+```bash
+git fetch upstream
+git merge upstream/main
+```
+
+## GitHub publish
+
+See **`GITHUB_SETUP.md`**.
+
+---
+
+## Українською
+
+Це **Ductor із провайдером `claw`**. Спочатку зібрай і постав у `PATH` бінарник **`claw`** з другого репо (рекомендована назва на GitHub: **`claw-code-cheap-deepseek`** — там повна інструкція в **`SETUP.md`**).
+
+Потім: віртуальне середовище, `pip install -e .`, у **`config.json`** — `"provider": "claw"`, `"model": "deepseek-chat"`, токен Telegram і `allowed_user_ids`, у **`~/.ductor/.env`** — **`DEEPSEEK_API_KEY`**. Запуск: `python -m ductor_bot`.
+
+Публікація на GitHub: **`GITHUB_SETUP.md`**.

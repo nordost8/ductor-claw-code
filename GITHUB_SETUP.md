@@ -1,17 +1,38 @@
-# Підключення до GitHub
+# Publish on GitHub
 
-Зараз у цьому клоні:
+## Suggested repository name
 
-- **`upstream`** → `https://github.com/PleasePrompto/ductor.git` (оригінальний Ductor)
+**`ductor-claw-code`** — Ductor fork with **Claw Code** + **cheap DeepSeek** support.
 
-Зроби **порожній репозиторій** на GitHub (наприклад `ductor-claw-code`), потім:
+Full install steps: **[SETUP.md](SETUP.md)** (English + Українською).
+
+## Remotes in this clone
+
+- **`upstream`** → `https://github.com/PleasePrompto/ductor.git`
+
+## First push
+
+Create an **empty** repo on GitHub, then:
 
 ```bash
-cd /home/nordost/Projects/ductor-claw-code
+cd /path/to/ductor-claw-code
 git remote add origin https://github.com/YOUR_USER/ductor-claw-code.git
 git push -u origin main
 ```
 
-Якщо `origin` уже існує з помилковою URL — `git remote set-url origin https://github.com/YOUR_USER/ductor-claw-code.git`.
+If `origin` already exists with a wrong URL:
 
-Після першого `push` у налаштуваннях репозиторія на GitHub додай опис і посилання на форк **Claw Code**.
+```bash
+git remote set-url origin https://github.com/YOUR_USER/ductor-claw-code.git
+git push -u origin main
+```
+
+Link the companion Claw fork in the repo description (suggested name: **`claw-code-cheap-deepseek`**).
+
+---
+
+## Публікація на GitHub (українською)
+
+**Назва репо:** **`ductor-claw-code`**. Інструкція з установки — **[SETUP.md](SETUP.md)**.
+
+У цьому клоні вже є **`upstream`** на оригінальний Ductor. Створюєш порожній репозиторій на GitHub, додаєш **`origin`** на свій URL і робиш **`git push -u origin main`**. У описі репозиторія вкажи посилання на **`claw-code-cheap-deepseek`**.

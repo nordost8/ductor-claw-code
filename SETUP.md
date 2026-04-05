@@ -45,6 +45,13 @@ Create `~/.ductor/config/config.json` (or set `DUCTOR_HOME` and put `config/conf
 
 For the heavier reasoning model use `"model": "deepseek-reasoner"`.
 
+### Switching chat vs reasoning in Telegram
+
+- **`/model`** → choose **CLAW** → buttons **DEEPSEEK-CHAT** / **DEEPSEEK-REASONER**, or  
+- Text commands (aliases are expanded to canonical ids):  
+  **`/model deepseek-reasoner`**, **`/model reasoner`**, **`/model r1`**, **`/model ds-reasoner`**  
+- Leading directives on the next message: **`@deepseek-reasoner`**, **`@reasoner`**, **`@r1`** (same keys as in `/model`).
+
 Secrets go in **`$DUCTOR_HOME/.env`** (default `~/.ductor/.env`). At minimum for DeepSeek:
 
 ```bash

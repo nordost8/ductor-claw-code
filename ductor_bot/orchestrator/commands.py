@@ -12,6 +12,7 @@ from ductor_bot.i18n import t
 from ductor_bot.infra.version import check_pypi, get_current_version
 from ductor_bot.orchestrator.registry import OrchestratorResult
 from ductor_bot.orchestrator.selectors.cron_selector import cron_selector_start
+from ductor_bot.config import canonicalize_claw_model_id
 from ductor_bot.orchestrator.selectors.model_selector import model_selector_start, switch_model
 from ductor_bot.orchestrator.selectors.models import Button, ButtonGrid
 from ductor_bot.orchestrator.selectors.session_selector import session_selector_start
@@ -50,7 +51,7 @@ async def cmd_model(orch: Orchestrator, key: SessionKey, text: str) -> Orchestra
     if len(parts) < 2:
         resp = await model_selector_start(orch, key)
         return OrchestratorResult(text=resp.text, buttons=resp.buttons)
-    name = parts[1].strip()
+    name = canonicalize_claw_model_id(parts[1].strip())
     result_text = await switch_model(orch, key, name)
     return OrchestratorResult(text=result_text)
 

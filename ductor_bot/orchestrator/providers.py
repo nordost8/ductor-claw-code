@@ -10,8 +10,10 @@ from ductor_bot.config import (
     _GEMINI_ALIASES,
     CLAUDE_MODELS,
     CLAW_MODELS,
+    CLAW_MODEL_ALIASES,
     ModelRegistry,
     get_gemini_models,
+    resolve_claw_alias_key,
     set_gemini_models,
 )
 
@@ -124,7 +126,13 @@ class ProviderManager:
 
     def refresh_known_model_ids(self) -> None:
         """Refresh directive-known model IDs from dynamic provider registries."""
-        self._known_model_ids = CLAUDE_MODELS | CLAW_MODELS | _GEMINI_ALIASES | get_gemini_models()
+        self._known_model_ids = (
+            CLAUDE_MODELS
+            | CLAW_MODELS
+            | frozenset(CLAW_MODEL_ALIASES.keys())
+            | _GEMINI_ALIASES
+            | get_gemini_models()
+        )
 
     def resolve_runtime_target(self, requested_model: str | None = None) -> tuple[str, str]:
         """Resolve requested model to the effective ``(model, provider)`` pair."""
@@ -165,6 +173,9 @@ class ProviderManager:
         """
         if key in ("claude", "claw", "codex", "gemini"):
             return key, self.default_model_for_provider(key)
+        alias_model = resolve_claw_alias_key(key)
+        if alias_model is not None:
+            return "claw", alias_model
         if self.is_known_model(key):
             provider = self._models.provider_for(key)
             return provider, key

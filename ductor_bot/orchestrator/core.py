@@ -14,7 +14,7 @@ from ductor_bot.background import (
 )
 from ductor_bot.cli.process_registry import ProcessRegistry
 from ductor_bot.cli.service import CLIService, CLIServiceConfig
-from ductor_bot.config import AgentConfig
+from ductor_bot.config import AgentConfig, canonicalize_claw_model_id
 from ductor_bot.cron.manager import CronManager
 from ductor_bot.errors import (
     CLIError,
@@ -330,6 +330,9 @@ class Orchestrator:
         await self._ensure_docker()
 
         directives = parse_directives(dispatch.text, self._providers._known_model_ids)
+        directive_model = directives.model
+        if directive_model is not None:
+            directive_model = canonicalize_claw_model_id(directive_model)
 
         # Check if a leading @directive matches a named session
         if directives.raw_directives:
@@ -349,7 +352,7 @@ class Orchestrator:
 
         if directives.is_directive_only and directives.has_model:
             return OrchestratorResult(
-                text=f"Next message will use: {directives.model}\n"
+                text=f"Next message will use: {directive_model}\n"
                 f"(Send a message with @{directives.model} <text> to use it.)",
             )
 
@@ -360,7 +363,7 @@ class Orchestrator:
                 self,
                 dispatch.key,
                 prompt_text,
-                model_override=directives.model,
+                model_override=directive_model,
                 cbs=dispatch.streaming_callbacks(),
             )
 
@@ -368,7 +371,7 @@ class Orchestrator:
             self,
             dispatch.key,
             prompt_text,
-            model_override=directives.model,
+            model_override=directive_model,
         )
 
     def _register_commands(self) -> None:

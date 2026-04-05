@@ -12,7 +12,7 @@ Illustrative only. What actually runs depends on your **Ductor** setup (Docker s
 
 **Telegram bot ([Ductor](https://github.com/PleasePrompto/ductor)) + open-source [Claw Code](https://github.com/instructkr/claw-code) CLI** — drive the agent with **cheap [DeepSeek](https://www.deepseek.com/)** (and other backends your `claw` build exposes), not only Anthropic’s `claude` CLI.
 
-This fork adds a **`claw` provider**: `claw --output-format json prompt …`, `provider: "claw"`, models like `deepseek-chat` / `deepseek-reasoner`, `DEEPSEEK_API_KEY` in `$DUCTOR_HOME/.env`, `/model` in Telegram, rules, etc.
+This fork adds a **`claw` provider**: `claw --output-format json prompt …`, `provider: "claw"`, **`deepseek-chat`** (fast) and **`deepseek-reasoner`** (reasoning), `DEEPSEEK_API_KEY` in `$DUCTOR_HOME/.env`, `/model` in Telegram (or **`/model reasoner`**, **`@reasoner`** — see **SETUP.md**), rules, etc.
 
 ## Quick links
 

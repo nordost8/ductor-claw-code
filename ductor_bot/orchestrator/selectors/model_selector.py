@@ -11,6 +11,7 @@ from ductor_bot.cli.auth import AuthStatus, check_all_auth
 from ductor_bot.config import (
     CLAUDE_MODELS_ORDERED,
     CLAW_MODELS_ORDERED,
+    canonicalize_claw_model_id,
     get_gemini_models,
     update_config_file_async,
 )
@@ -230,6 +231,8 @@ async def switch_model(
     """
     is_topic = key.topic_id is not None
     active_session = await orch._sessions.get_active(key)
+
+    model_id = canonicalize_claw_model_id(model_id)
 
     old = active_session.model if is_topic and active_session else orch._config.model
     same_model = old == model_id

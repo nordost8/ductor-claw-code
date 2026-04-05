@@ -432,6 +432,28 @@ CLAUDE_MODELS: frozenset[str] = frozenset(CLAUDE_MODELS_ORDERED)
 CLAW_MODELS_ORDERED: tuple[str, ...] = ("deepseek-chat", "deepseek-reasoner")
 CLAW_MODELS: frozenset[str] = frozenset(CLAW_MODELS_ORDERED)
 
+# Shortcuts for Telegram /model and @-directives → official DeepSeek model ids for Claw.
+CLAW_MODEL_ALIASES: dict[str, str] = {
+    "reasoner": "deepseek-reasoner",
+    "r1": "deepseek-reasoner",
+    "ds-reasoner": "deepseek-reasoner",
+    "deepseek-reason": "deepseek-reasoner",
+    "ds-chat": "deepseek-chat",
+}
+
+
+def canonicalize_claw_model_id(model_id: str) -> str:
+    """Map user shortcuts to canonical Claw model names (pass-through if not an alias)."""
+    if not model_id:
+        return model_id
+    key = model_id.strip().lower()
+    return CLAW_MODEL_ALIASES.get(key, model_id.strip())
+
+
+def resolve_claw_alias_key(key: str) -> str | None:
+    """If *key* is a Claw model alias, return canonical model id; else None."""
+    return CLAW_MODEL_ALIASES.get((key or "").strip().lower())
+
 # "auto" is a Gemini-specific alias (Gemini CLI auto-selects the best model).
 _GEMINI_ALIASES: frozenset[str] = frozenset({"auto", "pro", "flash", "flash-lite"})
 
@@ -449,6 +471,7 @@ class ModelRegistry:
     @staticmethod
     def provider_for(model_id: str) -> str:
         """Return the provider for a model ID."""
+        model_id = canonicalize_claw_model_id(model_id)
         if model_id in CLAUDE_MODELS:
             return "claude"
         if model_id in CLAW_MODELS or model_id.startswith("deepseek"):

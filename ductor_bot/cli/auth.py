@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import shutil
 import subprocess
 from dataclasses import dataclass
 from datetime import UTC, datetime
@@ -110,6 +111,50 @@ def check_claude_auth() -> AuthResult:
 
     result = AuthResult("claude", AuthStatus.NOT_FOUND)
     logger.debug("Auth check provider=%s status=%s", result.provider, result.status)
+    return result
+
+
+def _claw_keys_in_ductor_dotenv() -> bool:
+    """True when ``$DUCTOR_HOME/.env`` (resolved via paths) has a Claw-relevant API key."""
+    try:
+        from ductor_bot.infra.env_secrets import load_env_secrets
+        from ductor_bot.workspace.paths import resolve_paths
+
+        sec = load_env_secrets(resolve_paths().env_file)
+    except Exception:
+        return False
+    for key in (
+        "DEEPSEEK_API_KEY",
+        "ANTHROPIC_API_KEY",
+        "ANTHROPIC_AUTH_TOKEN",
+        "OPENAI_API_KEY",
+    ):
+        if _normalize_key_like_value(str(sec.get(key, ""))):
+            return True
+    return False
+
+
+def check_claw_auth() -> AuthResult:
+    """Check Claw Code CLI: binary on PATH plus API keys Claw understands."""
+    claw_path = shutil.which("claw")
+    if not claw_path:
+        result = AuthResult("claw", AuthStatus.NOT_FOUND)
+        logger.debug("Auth check provider=%s status=%s", result.provider, result.status)
+        return result
+    cp = Path(claw_path)
+    mtime = datetime.fromtimestamp(cp.stat().st_mtime, tz=UTC)
+    if (
+        _has_nonempty_env("DEEPSEEK_API_KEY")
+        or _has_nonempty_env("ANTHROPIC_API_KEY")
+        or _has_nonempty_env("ANTHROPIC_AUTH_TOKEN")
+        or _has_nonempty_env("OPENAI_API_KEY")
+        or _claw_keys_in_ductor_dotenv()
+    ):
+        result = AuthResult("claw", AuthStatus.AUTHENTICATED, cp, mtime)
+        logger.debug("Auth check provider=%s status=%s", result.provider, result.status)
+        return result
+    result = AuthResult("claw", AuthStatus.INSTALLED, cp, mtime)
+    logger.debug("Auth check provider=%s status=%s (no env keys)", result.provider, result.status)
     return result
 
 
@@ -399,6 +444,7 @@ def _normalize_key_like_value(raw: str) -> str:
 
 _CHECKERS: dict[str, Callable[[], AuthResult]] = {
     "claude": check_claude_auth,
+    "claw": check_claw_auth,
     "codex": check_codex_auth,
     "gemini": check_gemini_auth,
 }

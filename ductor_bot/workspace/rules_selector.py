@@ -41,11 +41,15 @@ class RulesSelector:
         # Cache auth status to avoid multiple checks
         auth = check_all_auth()
         claude_result = auth.get("claude")
+        claw_result = auth.get("claw")
         codex_result = auth.get("codex")
         gemini_result = auth.get("gemini")
 
         self._claude_authenticated = (
             claude_result.status == AuthStatus.AUTHENTICATED if claude_result else False
+        )
+        self._claw_authenticated = (
+            claw_result.status == AuthStatus.AUTHENTICATED if claw_result else False
         )
         self._codex_authenticated = (
             codex_result.status == AuthStatus.AUTHENTICATED if codex_result else False
@@ -60,6 +64,7 @@ class RulesSelector:
         return sum(
             (
                 self._claude_authenticated,
+                self._claw_authenticated,
                 self._codex_authenticated,
                 self._gemini_authenticated,
             )
@@ -143,9 +148,10 @@ class RulesSelector:
         """
         variant = self.get_variant_suffix()
         logger.info(
-            "Deploying rule files (variant: %s, claude=%s, codex=%s, gemini=%s)",
+            "Deploying rule files (variant: %s, claude=%s, claw=%s, codex=%s, gemini=%s)",
             variant,
             self._claude_authenticated,
+            self._claw_authenticated,
             self._codex_authenticated,
             self._gemini_authenticated,
         )
@@ -172,8 +178,8 @@ class RulesSelector:
             dst_dir.mkdir(parents=True, exist_ok=True)
 
             try:
-                # Deploy CLAUDE.md if Claude is authenticated
-                if self._claude_authenticated:
+                # Deploy CLAUDE.md if Claude or Claw is authenticated (both use workspace CLAUDE.md).
+                if self._claude_authenticated or self._claw_authenticated:
                     claude_dst = dst_dir / "CLAUDE.md"
                     shutil.copy2(template, claude_dst)
                     deployed_count += 1
@@ -197,9 +203,10 @@ class RulesSelector:
                 logger.exception("Failed to deploy %s", template)
 
         logger.info(
-            "Deployed %d rule files (Claude=%s, Codex=%s, Gemini=%s)",
+            "Deployed %d rule files (Claude=%s, Claw=%s, Codex=%s, Gemini=%s)",
             deployed_count,
             self._claude_authenticated,
+            self._claw_authenticated,
             self._codex_authenticated,
             self._gemini_authenticated,
         )
@@ -214,8 +221,8 @@ class RulesSelector:
         that are not currently authenticated.
         """
         stale: list[tuple[str, str]] = []
-        if not self._claude_authenticated:
-            stale.append(("CLAUDE.md", "Claude"))
+        if not self._claude_authenticated and not self._claw_authenticated:
+            stale.append(("CLAUDE.md", "Claude/Claw"))
         if not self._codex_authenticated:
             stale.append(("AGENTS.md", "Codex"))
         if not self._gemini_authenticated:

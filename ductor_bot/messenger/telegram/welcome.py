@@ -119,16 +119,20 @@ def get_welcome_button_label(data: str) -> str | None:
 
 def _build_auth_block(auth_results: dict[str, AuthResult], config: AgentConfig) -> str:
     claude = auth_results.get("claude")
+    claw = auth_results.get("claw")
     codex = auth_results.get("codex")
     gemini = auth_results.get("gemini")
 
     claude_ok = claude is not None and claude.is_authenticated
+    claw_ok = claw is not None and claw.is_authenticated
     codex_ok = codex is not None and codex.is_authenticated
     gemini_ok = gemini is not None and gemini.is_authenticated
 
     providers: list[str] = []
     if claude_ok:
         providers.append("Claude Code")
+    if claw_ok:
+        providers.append("Claw Code")
     if codex_ok:
         providers.append("Codex")
     if gemini_ok:
@@ -138,5 +142,7 @@ def _build_auth_block(auth_results: dict[str, AuthResult], config: AgentConfig) 
         return t("welcome.no_auth")
 
     providers_str = " + ".join(providers)
-    model_name = config.model.capitalize() if config.provider == "claude" else config.model
+    model_name = (
+        config.model.capitalize() if config.provider in ("claude", "claw") else config.model
+    )
     return t("welcome.auth_line", providers=providers_str, model=model_name)

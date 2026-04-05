@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING
 from ductor_bot.config import (
     _GEMINI_ALIASES,
     CLAUDE_MODELS,
+    CLAW_MODELS,
     ModelRegistry,
     get_gemini_models,
     set_gemini_models,
@@ -71,6 +72,8 @@ class ProviderManager:
         _model, provider = self.resolve_runtime_target(self._config.model)
         if provider == "claude":
             return "Claude Code"
+        if provider == "claw":
+            return "Claw Code"
         if provider == "gemini":
             return "Gemini"
         return "Codex"
@@ -121,7 +124,7 @@ class ProviderManager:
 
     def refresh_known_model_ids(self) -> None:
         """Refresh directive-known model IDs from dynamic provider registries."""
-        self._known_model_ids = CLAUDE_MODELS | _GEMINI_ALIASES | get_gemini_models()
+        self._known_model_ids = CLAUDE_MODELS | CLAW_MODELS | _GEMINI_ALIASES | get_gemini_models()
 
     def resolve_runtime_target(self, requested_model: str | None = None) -> tuple[str, str]:
         """Resolve requested model to the effective ``(model, provider)`` pair."""
@@ -139,6 +142,8 @@ class ProviderManager:
         """Return the default model ID for a provider, or empty string if unknown."""
         if provider == "claude":
             return self._config.model if self._config.provider == "claude" else "sonnet"
+        if provider == "claw":
+            return self._config.model if self._config.provider == "claw" else "deepseek-chat"
         if provider == "codex":
             codex = self._codex_cache_fn() if self._codex_cache_fn else None
             if codex:
@@ -158,7 +163,7 @@ class ProviderManager:
         - known model   (``@opus``)  -> (inferred_provider, model)
         - unknown                    -> None
         """
-        if key in ("claude", "codex", "gemini"):
+        if key in ("claude", "claw", "codex", "gemini"):
             return key, self.default_model_for_provider(key)
         if self.is_known_model(key):
             provider = self._models.provider_for(key)
@@ -177,6 +182,7 @@ class ProviderManager:
         """
         provider_meta: dict[str, tuple[str, str]] = {
             "claude": ("Claude Code", "#F97316"),
+            "claw": ("Claw Code", "#0EA5E9"),
             "gemini": ("Gemini", "#8B5CF6"),
             "codex": ("Codex", "#10B981"),
         }
@@ -186,6 +192,8 @@ class ProviderManager:
             models: list[str]
             if pid == "claude":
                 models = sorted(CLAUDE_MODELS)
+            elif pid == "claw":
+                models = sorted(CLAW_MODELS)
             elif pid == "gemini":
                 gemini = get_gemini_models()
                 models = sorted(gemini) if gemini else sorted(_GEMINI_ALIASES)

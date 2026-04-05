@@ -92,6 +92,7 @@ class CLIServiceConfig:
     claude_cli_parameters: tuple[str, ...] = ()
     codex_cli_parameters: tuple[str, ...] = ()
     gemini_cli_parameters: tuple[str, ...] = ()
+    claw_cli_parameters: tuple[str, ...] = ()
     agent_name: str = "main"
     interagent_port: int = 8799
 
@@ -101,6 +102,8 @@ class CLIServiceConfig:
             return list(self.codex_cli_parameters)
         if provider == "gemini":
             return list(self.gemini_cli_parameters)
+        if provider == "claw":
+            return list(self.claw_cli_parameters)
         return list(self.claude_cli_parameters)
 
 
@@ -300,6 +303,9 @@ class CLIService:
         """Return ``(provider, model)`` that would be used for *request*."""
         if request.provider_override:
             return request.provider_override, request.model_override or ""
+        if self._config.provider == "claw":
+            model = request.model_override or self._config.default_model
+            return "claw", model
         model = request.model_override or self._config.default_model
         return self._models.provider_for(model), model
 

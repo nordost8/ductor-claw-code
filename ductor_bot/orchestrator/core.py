@@ -142,6 +142,7 @@ class Orchestrator:
                 claude_cli_parameters=tuple(config.cli_parameters.claude),
                 codex_cli_parameters=tuple(config.cli_parameters.codex),
                 gemini_cli_parameters=tuple(config.cli_parameters.gemini),
+                claw_cli_parameters=tuple(config.cli_parameters.claw),
                 agent_name=agent_name,
                 interagent_port=interagent_port,
             ),
@@ -634,6 +635,9 @@ class Orchestrator:
                     claude_cli_parameters=tuple(config.cli_parameters.claude),
                     codex_cli_parameters=tuple(config.cli_parameters.codex),
                     gemini_cli_parameters=tuple(config.cli_parameters.gemini),
+                    claw_cli_parameters=tuple(config.cli_parameters.claw),
+                    agent_name=self._cli_service._config.agent_name,
+                    interagent_port=self._cli_service._config.interagent_port,
                 )
             )
 

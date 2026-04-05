@@ -156,6 +156,7 @@ class CLIParametersConfig(BaseModel):
     claude: list[str] = Field(default_factory=list)
     codex: list[str] = Field(default_factory=list)
     gemini: list[str] = Field(default_factory=list)
+    claw: list[str] = Field(default_factory=list)
 
 
 class MatrixConfig(BaseModel):
@@ -428,6 +429,9 @@ def _detect_posix_timezone() -> ZoneInfo | None:
 CLAUDE_MODELS_ORDERED: tuple[str, ...] = ("haiku", "sonnet", "opus")
 CLAUDE_MODELS: frozenset[str] = frozenset(CLAUDE_MODELS_ORDERED)
 
+CLAW_MODELS_ORDERED: tuple[str, ...] = ("deepseek-chat", "deepseek-reasoner")
+CLAW_MODELS: frozenset[str] = frozenset(CLAW_MODELS_ORDERED)
+
 # "auto" is a Gemini-specific alias (Gemini CLI auto-selects the best model).
 _GEMINI_ALIASES: frozenset[str] = frozenset({"auto", "pro", "flash", "flash-lite"})
 
@@ -447,6 +451,8 @@ class ModelRegistry:
         """Return the provider for a model ID."""
         if model_id in CLAUDE_MODELS:
             return "claude"
+        if model_id in CLAW_MODELS or model_id.startswith("deepseek"):
+            return "claw"
         if (
             model_id in _GEMINI_ALIASES
             or model_id in _runtime_gemini[0]

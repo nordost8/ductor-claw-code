@@ -8,7 +8,12 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from ductor_bot.cli.auth import AuthStatus, check_all_auth
-from ductor_bot.config import CLAUDE_MODELS_ORDERED, get_gemini_models, update_config_file_async
+from ductor_bot.config import (
+    CLAUDE_MODELS_ORDERED,
+    CLAW_MODELS_ORDERED,
+    get_gemini_models,
+    update_config_file_async,
+)
 from ductor_bot.i18n import t
 from ductor_bot.multiagent.registry import update_agent_fields
 from ductor_bot.orchestrator.selectors.models import Button, ButtonGrid, SelectorResponse
@@ -164,6 +169,8 @@ async def model_selector_start(
     buttons: list[Button] = []
     if "claude" in authed:
         buttons.append(Button(text="CLAUDE", callback_data="ms:p:claude"))
+    if "claw" in authed:
+        buttons.append(Button(text="CLAW", callback_data="ms:p:claw"))
     if "codex" in authed:
         buttons.append(Button(text="CODEX", callback_data="ms:p:codex"))
     if "gemini" in authed:
@@ -345,6 +352,16 @@ async def _build_model_step(
         )
         return SelectorResponse(text=f"{header}\n\n{t('model.select_claude')}", buttons=keyboard)
 
+    if provider == "claw":
+        buttons = [Button(text=m.upper(), callback_data=f"ms:m:{m}") for m in CLAW_MODELS_ORDERED]
+        keyboard = ButtonGrid(
+            rows=[
+                buttons,
+                [Button(text=t("model.btn_back"), callback_data="ms:b:root")],
+            ]
+        )
+        return SelectorResponse(text=f"{header}\n\nSelect Claw model:", buttons=keyboard)
+
     if provider == "gemini":
         gemini_models = _gemini_models_for_selector()
         if not gemini_models:
@@ -391,7 +408,7 @@ async def _handle_model_selected(
     """Handle a model button press. Claude/Gemini: switch immediately. Codex: show reasoning."""
     provider = orch.models.provider_for(model_id)
 
-    if provider in ("claude", "gemini"):
+    if provider in ("claude", "gemini", "claw"):
         result = await switch_model(orch, key, model_id)
         return SelectorResponse(text=result)
 

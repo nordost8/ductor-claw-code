@@ -21,6 +21,7 @@ from ductor_bot.messenger.telegram.formatting import (
     TELEGRAM_MSG_LIMIT,
     markdown_to_telegram_html,
     split_html_message,
+    telegram_html_to_plain_text,
 )
 from ductor_bot.text.response_format import normalize_tool_name
 
@@ -139,8 +140,12 @@ class StreamEditor:
         except TelegramBadRequest:
             if parse_mode is not None:
                 logger.warning("HTML send failed, falling back to plain text")
-                fallback = (raw_fallback or text)[:TELEGRAM_MSG_LIMIT]
-                await self._send(fallback, parse_mode=None)
+                plain = telegram_html_to_plain_text(display)
+                if not plain.strip():
+                    plain = (raw_fallback or text)[:TELEGRAM_MSG_LIMIT]
+                else:
+                    plain = plain[:TELEGRAM_MSG_LIMIT]
+                await self._send(plain, parse_mode=None)
             else:
                 logger.exception("Failed to send stream chunk even as plain text")
 

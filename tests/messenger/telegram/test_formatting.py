@@ -3,6 +3,14 @@
 from __future__ import annotations
 
 
+class TestTelegramHtmlToPlainText:
+    def test_strips_tags(self) -> None:
+        from ductor_bot.messenger.telegram.formatting import telegram_html_to_plain_text
+
+        assert telegram_html_to_plain_text("<b>Hi</b>") == "Hi"
+        assert "bold" in telegram_html_to_plain_text("A <b>bold</b> line")
+
+
 class TestMarkdownToTelegramHTML:
     """Test Markdown -> Telegram HTML conversion."""
 
@@ -17,6 +25,12 @@ class TestMarkdownToTelegramHTML:
         from ductor_bot.messenger.telegram.formatting import markdown_to_telegram_html
 
         result = markdown_to_telegram_html("This is **bold** text")
+        assert "<b>bold</b>" in result
+
+    def test_double_underscore_bold(self) -> None:
+        from ductor_bot.messenger.telegram.formatting import markdown_to_telegram_html
+
+        result = markdown_to_telegram_html("This is __bold__ text")
         assert "<b>bold</b>" in result
 
     def test_italic_text(self) -> None:
@@ -56,7 +70,8 @@ class TestMarkdownToTelegramHTML:
 
         md = "```python\nx = 1\n```"
         result = markdown_to_telegram_html(md)
-        assert '<code class="language-python">' in result
+        assert "<pre><code>" in result
+        assert "x = 1" in result
 
     def test_code_block_content_not_double_escaped(self) -> None:
         from ductor_bot.messenger.telegram.formatting import markdown_to_telegram_html

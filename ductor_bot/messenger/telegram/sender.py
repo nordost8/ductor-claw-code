@@ -21,6 +21,7 @@ from ductor_bot.messenger.telegram.buttons import extract_buttons
 from ductor_bot.messenger.telegram.formatting import (
     markdown_to_telegram_html,
     split_html_message,
+    telegram_html_to_plain_text,
 )
 from ductor_bot.security.paths import is_path_safe
 
@@ -166,7 +167,9 @@ async def _send_text_chunks(
             # Only resend unsent chunks (i onwards) to avoid duplicating
             # content that was already delivered as HTML.
             remaining = "\n\n".join(chunks[i:])
-            plain = html_mod.unescape(re.sub(r"<[^>]+>", "", remaining))
+            plain = telegram_html_to_plain_text(remaining) or html_mod.unescape(
+                re.sub(r"<[^>]+>", "", remaining)
+            )
             for pc in split_html_message(plain):
                 last_msg = await bot.send_message(
                     chat_id=chat_id,

@@ -46,13 +46,18 @@ python -m ductor_bot
 
 Use **`deepseek-reasoner`** in `model` if you want the reasoning variant. Other cheap models depend on what your **Claw** build exposes (OpenAI-compatible providers, etc.) — see the Claw repo docs.
 
-## Syncing with upstream Ductor
+## Syncing with upstream (Ductor + Claw)
+
+**Ductor:** full branch model, file map, and **Claw CLI** dependency — **[docs/UPSTREAM_SYNC.md](docs/UPSTREAM_SYNC.md)**.
+
+Quick fetch:
 
 ```bash
-git fetch upstream
+./scripts/sync-upstream.sh
 git merge upstream/main
-# resolve conflicts, test, then push to your origin
 ```
+
+Log merges in **`CHANGELOG_FORK.md`**. After upgrading **Claw** separately, re-test `claw --output-format json` against **`claw_provider.py`**.
 
 ## Українською
 

@@ -68,10 +68,14 @@ Or use your own systemd service / `pipx` layout; the important part is **`claw` 
 
 ## Syncing from upstream Ductor
 
+See **[docs/UPSTREAM_SYNC.md](docs/UPSTREAM_SYNC.md)** (Ductor + when to adjust for **Claw** updates).
+
 ```bash
-git fetch upstream
+./scripts/sync-upstream.sh
 git merge upstream/main
 ```
+
+Record in **`CHANGELOG_FORK.md`**.
 
 ## GitHub publish
 

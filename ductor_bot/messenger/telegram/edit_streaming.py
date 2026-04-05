@@ -21,7 +21,6 @@ from ductor_bot.messenger.telegram.formatting import (
     TELEGRAM_MSG_LIMIT,
     markdown_to_telegram_html,
     split_html_message,
-    telegram_html_to_plain_text,
 )
 from ductor_bot.text.response_format import normalize_tool_name
 
@@ -317,10 +316,9 @@ class EditStreamEditor:
     async def _create_message_plain(self, text: str) -> None:
         """Fallback: send without HTML parse mode."""
         try:
-            plain = telegram_html_to_plain_text(text) or text
             msg = await self._bot.send_message(
                 chat_id=self._chat_id,
-                text=plain[:TELEGRAM_MSG_LIMIT],
+                text=text[:TELEGRAM_MSG_LIMIT],
                 parse_mode=None,
                 message_thread_id=self._thread_id,
             )
@@ -406,10 +404,9 @@ class EditStreamEditor:
                     message_thread_id=self._thread_id,
                 )
             except TelegramBadRequest:
-                plain = telegram_html_to_plain_text(display) or display
                 await self._bot.send_message(
                     chat_id=self._chat_id,
-                    text=plain[:TELEGRAM_MSG_LIMIT],
+                    text=display,
                     parse_mode=None,
                     message_thread_id=self._thread_id,
                 )

@@ -106,19 +106,6 @@ def _extract_tables(src: str) -> tuple[str, list[str]]:
     return "\n".join(out_lines), table_blocks
 
 
-def telegram_html_to_plain_text(html_text: str) -> str:
-    """Strip Telegram/HTML markup for plain-text fallback when parse_mode=HTML fails.
-
-    Avoids showing raw Markdown (``**bold**``) or literal ``<b>`` tags to the user.
-    """
-    if not html_text:
-        return ""
-    t = re.sub(r"<br\s*/?>", "\n", html_text, flags=re.IGNORECASE)
-    t = re.sub(r"</(p|div|blockquote|pre)>", "\n\n", t, flags=re.IGNORECASE)
-    t = re.sub(r"<[^>]+>", "", t)
-    return html.unescape(t).strip()
-
-
 def markdown_to_telegram_html(text: str) -> str:
     """Convert Markdown text to Telegram-compatible HTML.
 
@@ -150,8 +137,6 @@ def markdown_to_telegram_html(text: str) -> str:
 
     text = re.sub(r"^#{1,6}\s+(.+)$", r"<b>\1</b>", text, flags=re.MULTILINE)
     text = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", text, flags=re.DOTALL)
-    # Double-underscore bold (common in some model outputs; do before italic `_`).
-    text = re.sub(r"__(.+?)__", r"<b>\1</b>", text, flags=re.DOTALL)
     text = re.sub(r"(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)", r"<i>\1</i>", text)
     text = re.sub(r"(?<!\w)_(?!_)(.+?)(?<!_)_(?!\w)", r"<i>\1</i>", text)
     text = re.sub(r"~~(.+?)~~", r"<s>\1</s>", text)
@@ -168,9 +153,10 @@ def markdown_to_telegram_html(text: str) -> str:
 
     for i, (lang, code) in enumerate(code_blocks):
         escaped = html.escape(code)
-        # Telegram HTML rejects many attributes on <code>; use bare <pre><code>.
-        _ = lang  # language hint ignored for API compatibility
-        block = f"<pre><code>{escaped}</code></pre>"
+        if lang:
+            block = f'<pre><code class="language-{html.escape(lang)}">{escaped}</code></pre>'
+        else:
+            block = f"<pre>{escaped}</pre>"
         text = text.replace(_placeholder("CB", i), block)
 
     return text

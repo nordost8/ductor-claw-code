@@ -217,6 +217,7 @@ provider_change = "Провайдер: {old} -> {new}"
 reasoning_line = "Reasoning: {effort}"
 effort_updated = "Уровень reasoning обновлён."
 already_running = "Уже работает на {model}. Без изменений."
+claw_not_allowed = "Модель Claw {model} запрещена для этого бота. Измените claw_models в config.json."
 
 resume_hint = """\
 Возобновляю сессию `{sid}`.

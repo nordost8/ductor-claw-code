@@ -10,8 +10,11 @@ from ductor_bot.config import (
     _GEMINI_ALIASES,
     CLAUDE_MODELS,
     CLAW_MODELS,
-    CLAW_MODEL_ALIASES,
     ModelRegistry,
+    canonical_claw_models_allowlist,
+    canonicalize_claw_model_id,
+    claw_models_ordered_for_ui,
+    effective_claw_directive_ids,
     get_gemini_models,
     resolve_claw_alias_key,
     set_gemini_models,
@@ -128,8 +131,7 @@ class ProviderManager:
         """Refresh directive-known model IDs from dynamic provider registries."""
         self._known_model_ids = (
             CLAUDE_MODELS
-            | CLAW_MODELS
-            | frozenset(CLAW_MODEL_ALIASES.keys())
+            | effective_claw_directive_ids(self._config)
             | _GEMINI_ALIASES
             | get_gemini_models()
         )
@@ -146,12 +148,33 @@ class ProviderManager:
         codex = self._codex_cache_fn() if self._codex_cache_fn else None
         return bool(codex and codex.validate_model(candidate))
 
+    def _resolve_default_claw_model(self) -> str:
+        """Effective default Claw model respecting optional claw_models allowlist."""
+        cfg = self._config
+        allow = canonical_claw_models_allowlist(cfg)
+        if cfg.provider == "claw":
+            m = canonicalize_claw_model_id(cfg.model)
+            if allow is None or m in allow:
+                return m
+        else:
+            m = "deepseek-chat"
+            if allow is None:
+                return m
+            if m in allow:
+                return m
+        if allow is None:
+            return "deepseek-chat"
+        for mid in claw_models_ordered_for_ui(cfg):
+            if mid in allow:
+                return mid
+        return min(allow)
+
     def default_model_for_provider(self, provider: str) -> str:
         """Return the default model ID for a provider, or empty string if unknown."""
         if provider == "claude":
             return self._config.model if self._config.provider == "claude" else "sonnet"
         if provider == "claw":
-            return self._config.model if self._config.provider == "claw" else "deepseek-chat"
+            return self._resolve_default_claw_model()
         if provider == "codex":
             codex = self._codex_cache_fn() if self._codex_cache_fn else None
             if codex:
@@ -204,7 +227,7 @@ class ProviderManager:
             if pid == "claude":
                 models = sorted(CLAUDE_MODELS)
             elif pid == "claw":
-                models = sorted(CLAW_MODELS)
+                models = list(claw_models_ordered_for_ui(self._config))
             elif pid == "gemini":
                 gemini = get_gemini_models()
                 models = sorted(gemini) if gemini else sorted(_GEMINI_ALIASES)

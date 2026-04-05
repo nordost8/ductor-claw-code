@@ -311,10 +311,22 @@ class AgentConfig(BaseModel):
     interagent_port: int = 8799
     transport: str = "telegram"  # "telegram" | "matrix"
     transports: list[str] = Field(default_factory=list)
+    #: If set, only these Claw (DeepSeek) model IDs are allowed: /model wizard, /model X, @-directives.
+    claw_models: list[str] | None = None
     telegram_token: str = ""
     allowed_user_ids: list[int] = Field(default_factory=list)
     allowed_group_ids: list[int] = Field(default_factory=list)
     matrix: MatrixConfig = Field(default_factory=MatrixConfig)
+
+    @field_validator("claw_models", mode="before")
+    @classmethod
+    def _normalize_claw_models(cls, value: object) -> object:
+        if value is None:
+            return None
+        if not isinstance(value, list):
+            return value
+        out = [str(x).strip() for x in value if str(x).strip()]
+        return out or None
 
     @field_validator("gemini_api_key", mode="before")
     @classmethod
@@ -453,6 +465,52 @@ def canonicalize_claw_model_id(model_id: str) -> str:
 def resolve_claw_alias_key(key: str) -> str | None:
     """If *key* is a Claw model alias, return canonical model id; else None."""
     return CLAW_MODEL_ALIASES.get((key or "").strip().lower())
+
+
+def canonical_claw_models_allowlist(config: AgentConfig) -> frozenset[str] | None:
+    """Return allowed canonical Claw model IDs, or None when all built-in models are allowed."""
+    raw = config.claw_models
+    if not raw:
+        return None
+    canon = frozenset(canonicalize_claw_model_id(m) for m in raw)
+    valid = frozenset(m for m in canon if m in CLAW_MODELS)
+    unknown = canon - CLAW_MODELS
+    if unknown:
+        logger.warning("Ignoring unknown claw_models entries (not in CLAW_MODELS): %s", sorted(unknown))
+    return valid or None
+
+
+def effective_claw_directive_ids(config: AgentConfig) -> frozenset[str]:
+    """Claw model and alias tokens recognized in leading @-directives for this config."""
+    allow = canonical_claw_models_allowlist(config)
+    if allow is None:
+        return CLAW_MODELS | frozenset(CLAW_MODEL_ALIASES.keys())
+    out: set[str] = set()
+    for mid in CLAW_MODELS:
+        if mid in allow:
+            out.add(mid)
+    for alias, target in CLAW_MODEL_ALIASES.items():
+        if target in allow:
+            out.add(alias)
+    return frozenset(out)
+
+
+def claw_models_ordered_for_ui(config: AgentConfig) -> tuple[str, ...]:
+    """Ordered Claw model IDs for Telegram /model keyboard (respects claw_models order)."""
+    allow = canonical_claw_models_allowlist(config)
+    if allow is None:
+        return CLAW_MODELS_ORDERED
+    ordered: list[str] = []
+    if config.claw_models:
+        for raw in config.claw_models:
+            c = canonicalize_claw_model_id(raw)
+            if c in allow and c not in ordered:
+                ordered.append(c)
+    for m in CLAW_MODELS_ORDERED:
+        if m in allow and m not in ordered:
+            ordered.append(m)
+    return tuple(ordered)
+
 
 # "auto" is a Gemini-specific alias (Gemini CLI auto-selects the best model).
 _GEMINI_ALIASES: frozenset[str] = frozenset({"auto", "pro", "flash", "flash-lite"})

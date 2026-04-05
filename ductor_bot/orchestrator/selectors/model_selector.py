@@ -10,8 +10,9 @@ from typing import TYPE_CHECKING
 from ductor_bot.cli.auth import AuthStatus, check_all_auth
 from ductor_bot.config import (
     CLAUDE_MODELS_ORDERED,
-    CLAW_MODELS_ORDERED,
+    canonical_claw_models_allowlist,
     canonicalize_claw_model_id,
+    claw_models_ordered_for_ui,
     get_gemini_models,
     update_config_file_async,
 )
@@ -165,7 +166,7 @@ async def model_selector_start(
         codex_cache = (
             orch._observers.codex_cache_obs.get_cache() if orch._observers.codex_cache_obs else None
         )
-        return await _build_model_step(provider, header, codex_cache)
+        return await _build_model_step(orch, provider, header, codex_cache)
 
     buttons: list[Button] = []
     if "claude" in authed:
@@ -201,7 +202,7 @@ async def handle_model_callback(
     )
 
     if action == "p":
-        return await _build_model_step(payload, await _status_line(orch, key), codex_cache)
+        return await _build_model_step(orch, payload, await _status_line(orch, key), codex_cache)
 
     if action == "m":
         return await _handle_model_selected(orch, key, payload, codex_cache)
@@ -212,7 +213,7 @@ async def handle_model_callback(
     if action == "b":
         if payload == "root":
             return await model_selector_start(orch, key)
-        return await _build_model_step(payload, await _status_line(orch, key), codex_cache)
+        return await _build_model_step(orch, payload, await _status_line(orch, key), codex_cache)
 
     logger.warning("Unknown model selector callback: %s", data)
     return SelectorResponse(text=t("model.unknown_action"))
@@ -234,6 +235,11 @@ async def switch_model(
 
     model_id = canonicalize_claw_model_id(model_id)
 
+    allow = canonical_claw_models_allowlist(orch._config)
+    new_provider = orch.models.provider_for(model_id)
+    if allow is not None and new_provider == "claw" and model_id not in allow:
+        return t("model.claw_not_allowed", model=model_id)
+
     old = active_session.model if is_topic and active_session else orch._config.model
     same_model = old == model_id
     effort_only = same_model and reasoning_effort is not None
@@ -242,7 +248,6 @@ async def switch_model(
         return t("model.already_running", model=model_id)
 
     old_provider = orch.models.provider_for(old)
-    new_provider = orch.models.provider_for(model_id)
     provider_changed = old_provider != new_provider
     resume_session_id, resume_message_count = _resume_state_for_provider(
         active_session,
@@ -340,6 +345,7 @@ async def _status_line(orch: Orchestrator, key: SessionKey) -> str:
 
 
 async def _build_model_step(
+    orch: Orchestrator,
     provider: str,
     header: str,
     codex_cache: CodexModelCache | None = None,
@@ -356,7 +362,8 @@ async def _build_model_step(
         return SelectorResponse(text=f"{header}\n\n{t('model.select_claude')}", buttons=keyboard)
 
     if provider == "claw":
-        buttons = [Button(text=m.upper(), callback_data=f"ms:m:{m}") for m in CLAW_MODELS_ORDERED]
+        claw_rows = claw_models_ordered_for_ui(orch._config)
+        buttons = [Button(text=m.upper(), callback_data=f"ms:m:{m}") for m in claw_rows]
         keyboard = ButtonGrid(
             rows=[
                 buttons,

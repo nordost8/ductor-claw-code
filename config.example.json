@@ -4,6 +4,7 @@
     "log_level": "INFO",
     "provider": "claude",
     "model": "sonnet",
+    "claw_models": null,
     "language": "en",
     "ductor_home": "~/.ductor",
     "user_timezone": "Europe/Berlin",

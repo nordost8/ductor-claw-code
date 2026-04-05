@@ -179,6 +179,18 @@ class TestDefaultModelForProvider:
         pm = _pm()
         assert pm.default_model_for_provider("unknown") == ""
 
+    def test_claw_allowlist_reasoner_only(self) -> None:
+        cfg = AgentConfig(
+            model="deepseek-reasoner",
+            provider="claw",
+            claw_models=["deepseek-reasoner"],
+        )
+        pm = ProviderManager(cfg)
+        assert pm.default_model_for_provider("claw") == "deepseek-reasoner"
+        assert "deepseek-chat" not in pm._known_model_ids
+        assert "reasoner" in pm._known_model_ids
+        assert pm.resolve_session_directive("deepseek-chat") is None
+
 
 # ---------------------------------------------------------------------------
 # apply_auth_results

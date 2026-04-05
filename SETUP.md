@@ -45,6 +45,13 @@ Create `~/.ductor/config/config.json` (or set `DUCTOR_HOME` and put `config/conf
 
 For the heavier reasoning model use `"model": "deepseek-reasoner"`.
 
+To **lock the bot to reasoning only** (no `deepseek-chat`, no `@ds-chat`, `/model` wizard shows a single button), add:
+
+```json
+"model": "deepseek-reasoner",
+"claw_models": ["deepseek-reasoner"]
+```
+
 ### Switching chat vs reasoning in Telegram
 
 - **`/model`** → choose **CLAW** → buttons **DEEPSEEK-CHAT** / **DEEPSEEK-REASONER**, or  

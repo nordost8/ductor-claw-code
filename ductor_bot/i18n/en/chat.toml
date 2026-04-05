@@ -216,6 +216,7 @@ provider_change = "Provider: {old} -> {new}"
 reasoning_line = "Reasoning: {effort}"
 effort_updated = "Reasoning effort updated."
 already_running = "Already running {model}. No changes made."
+claw_not_allowed = "Claw model {model} is not allowed on this instance. Edit claw_models in config.json."
 
 resume_hint = """\
 Resuming session `{sid}`.

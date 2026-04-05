@@ -90,3 +90,5 @@ See **`GITHUB_SETUP.md`**.
 Потім: віртуальне середовище, `pip install -e .`, у **`config.json`** — `"provider": "claw"`, `"model": "deepseek-chat"`, токен Telegram і `allowed_user_ids`, у **`~/.ductor/.env`** — **`DEEPSEEK_API_KEY`**. Запуск: `python -m ductor_bot`.
 
 Публікація на GitHub: **`GITHUB_SETUP.md`**.
+
+Синхронізація з апстрімом (Ductor + залежність від Claw): **`docs/UPSTREAM_SYNC.md`**.

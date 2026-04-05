@@ -53,6 +53,16 @@ desktop.ini
 *.log
 *.sock
 
+# Ductor user data if ever copied into repo root (real history lives in DUCTOR_HOME only)
+/sessions.json
+/named_sessions.json
+/chat_activity.json
+/inflight_turns.json
+/startup_state.json
+/webhooks.json
+/cron_jobs.json
+/tasks.json
+
 # Personal / dev-only (not part of the project)
 start_bot.sh
 python_best_practice.md

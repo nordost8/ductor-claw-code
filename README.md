@@ -1,5 +1,11 @@
 # Ductor Claw Code
 
+> Ductor fork that adds a **`claw` provider** (runs the `claw` CLI).
+>
+> - Claw CLI (DeepSeek fork): `https://github.com/nordost8/claw-code-cheap-deepseek`
+> - Upstream Claw Code: `https://github.com/instructkr/claw-code`
+> - Ecosystem map: [`ECOSYSTEM.md`](./ECOSYSTEM.md)
+
 ## Example (Telegram)
 
 **You:** Use the Docker sandbox with Pillow installed: draw the Ukrainian flag (blue and yellow horizontal stripes), save it as `flag_ua.png`, and send the image back here.

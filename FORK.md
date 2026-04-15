@@ -59,8 +59,8 @@ git merge upstream/main
 
 Log merges in **`CHANGELOG_FORK.md`**. After upgrading **Claw** separately, re-test `claw --output-format json` against **`claw_provider.py`**.
 
-## Українською
+## Notes (English)
 
-Це **форк Ductor** із підтримкою **Claw Code**. Окремо потрібен репозиторій/збірка **Claw** (другий репо). Підключення дешевих моделей (наприклад **DeepSeek**) — через змінні в `~/.ductor/.env` і модель у `config.json`, згідно з можливостями твого бінарника `claw`.
+This is a **Ductor fork** that integrates **Claw Code** via the `claw` provider. You still need a separate **Claw** build/repo (the companion repo). “Cheap” model routing (for example **DeepSeek**) is configured via `~/.ductor/.env` and the model in `config.json`, depending on what your `claw` binary supports.
 
-Повна інструкція: **`SETUP.md`**. GitHub: **`GITHUB_SETUP.md`**. Другий репо назви **`claw-code-cheap-deepseek`** (англійською на GitHub).
+See **`SETUP.md`** for install steps and **`GITHUB_SETUP.md`** for publishing. The companion repo is intended to be published as **`claw-code-cheap-deepseek`**.

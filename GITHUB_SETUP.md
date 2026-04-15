@@ -4,7 +4,7 @@
 
 **`ductor-claw-code`** — Ductor fork with **Claw Code** + **cheap DeepSeek** support.
 
-Full install steps: **[SETUP.md](SETUP.md)** (English + Українською).
+Full install steps: **[SETUP.md](SETUP.md)**.
 
 ## Remotes in this clone
 
@@ -31,8 +31,8 @@ Link the companion Claw fork in the repo description (suggested name: **`claw-co
 
 ---
 
-## Публікація на GitHub (українською)
+## Publish on GitHub (English)
 
-**Назва репо:** **`ductor-claw-code`**. Інструкція з установки — **[SETUP.md](SETUP.md)**.
+**Repo name:** **`ductor-claw-code`**. For installation see **[SETUP.md](SETUP.md)**.
 
-У цьому клоні вже є **`upstream`** на оригінальний Ductor. Створюєш порожній репозиторій на GitHub, додаєш **`origin`** на свій URL і робиш **`git push -u origin main`**. У описі репозиторія вкажи посилання на **`claw-code-cheap-deepseek`**.
+This clone already has **`upstream`** pointing at the original Ductor. Create an empty repo on GitHub, add **`origin`** to your URL, then run **`git push -u origin main`**. In the repo description, link the companion repo **`claw-code-cheap-deepseek`**.

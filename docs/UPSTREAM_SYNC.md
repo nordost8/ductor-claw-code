@@ -59,8 +59,11 @@ Record Ductor upstream SHA after each merge in **`CHANGELOG_FORK.md`** (root).
 
 ---
 
-## Українською
+## Notes (English)
 
-**Два рівні оновлень:** (1) **Ductor** — `git fetch/merge upstream` у цьому репо; конфлікти переважно в перелічених Python-файлах. (2) **Claw** — окремий репо; після оновлення Claw перевір вихід JSON і за потреби поправ **`claw_provider.py`**.
+There are **two upgrade layers**:
 
-Спочатку оновлюй **Claw**, збери бінарник, потім **Ductor**-форк. Деталі для репо Claw — у їхньому **`docs/UPSTREAM_SYNC.md`**.
+1. **Ductor** — `git fetch/merge upstream` in this repo; conflicts usually land in the Python files listed above.
+2. **Claw** — upgraded in the companion repo; after upgrading Claw, verify the JSON output/flags and adjust **`claw_provider.py`** if needed.
+
+Recommended order: upgrade **Claw** first (build the binary), then upgrade this **Ductor** fork. For Claw-side details see that repo’s `docs/UPSTREAM_SYNC.md`.
